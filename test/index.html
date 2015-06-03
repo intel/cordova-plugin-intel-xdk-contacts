@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <!--meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /-->
+        <meta name="viewport" content="width=device-width"/>
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Contacts</title>
+    </head>
+    <body>
+        <div class="app">
+            <h1>Contacts Test</h1>
+            <div id="deviceready" class="blink">
+                <p class="event listening">Connecting to Device</p>
+                <p class="event received">Device is Ready</p>
+            </div>
+            <p id="event"></p>
+            <hr />
+            <button onclick="addContact();">Add Contact</button>
+            <button onclick="chooseContact();">Choose Contact</button>
+            <button onclick="editContact();">Edit Contact</button>
+            <button onclick="getContactList();">Get ContactList</button>
+            <button onclick="getContacts();">Get Contacts</button>
+            <button onclick="removeContact();">Remove Contact</button>
+            <hr />
+            <table id="contacts"></table>
+            <dl id="details"></dl>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+            
+            function displayEvent(message) {
+                var tag = document.getElementById("event");
+                if(tag != null){
+                    tag.innerHTML = message;
+                }
+            }
+            
+            function addContact(){
+                intel.xdk.contacts.addContact();
+            }
+
+            document.addEventListener('intel.xdk.contacts.add', function(e){
+                displayEvent("add(success=" + e.success + 
+                    ", contactid=" + e.contactid + ")");
+                if (e.success) {
+                    displayContactTable(e.contactid);
+                }
+            });
+
+            function chooseContact(){
+                intel.xdk.contacts.chooseContact();
+            }
+
+            document.addEventListener('intel.xdk.contacts.choose', function(e){
+                displayEvent("choose(success=" + e.success + 
+                    ", contactid=" + e.contactid + ")");
+                if (e.success) {
+                    displayContactTable(e.contactid);
+                }
+            });
+
+
+            function editContact(){
+                displayContactTable("", "Click a contact to edit it", function(id) {
+                                    intel.xdk.contacts.editContact(id);
+                                    });
+            }
+
+            document.addEventListener('intel.xdk.contacts.edit', function(e){
+                  displayEvent("edit(success=" + e.success +
+                               ", contactid=" + e.contactid +
+                               ", error=" + e.error + ")");
+                  if (e.success) {
+                      displayContactTable(e.contactid);
+                  }
+              });
+              
+
+            function displayContactTable(highlightID, captionText, action) {
+                document.getElementById('details').setAttribute('style', 'display:none');
+                var table = document.getElementById("contacts");
+                table.setAttribute('style', 'display:table;');
+                table.innerHTML = '';
+
+                var myContacts = intel.xdk.contacts.getContactList();
+                if(myContacts.length == 0){
+                    var tr = document.createElement('tr');
+                    var td = document.createElement('td');
+
+                    td.innerHTML = 'Contact list is empty!';
+                    tr.appendChild(td);
+                    tr.setAttribute('style', 'background-color:#B8BFD8');
+                    table.appendChild(tr);
+                }
+                else {
+                    if (captionText) {
+                        var caption = document.createElement('caption');
+                        caption.innerHTML = captionText;
+                        table.appendChild(caption);
+                    }
+
+                    for(var i=0;i<myContacts.length;i++) {
+                        //add row to table
+                        var contactID = myContacts[i];
+                        var contactInfo = intel.xdk.contacts.getContactData(contactID);
+                        var tr = document.createElement("tr");
+                        tr.setAttribute('style', 'background-color:#B8BFD8');
+                        if (contactID == highlightID) {
+                            tr.setAttribute('style', 'background-color:#D8BFB8');
+                        }
+                        if (action) {
+                            tr.onclick = action.bind(this, contactID);
+                        }
+                        var tdId = document.createElement("td");
+                        tdId.innerHTML = contactInfo.id;
+                        tr.appendChild(tdId);
+                        var tdMsg = document.createElement("td");
+                        tdMsg.innerHTML = contactInfo.name;
+                        tr.appendChild(tdMsg);
+                        table.appendChild(tr);
+                    }
+                }
+
+                var e = document.createEvent('Event');
+                e.initEvent('TableCreated', true, true);
+                document.dispatchEvent(e);
+            }
+
+            function displayOneDetail(list, info, label) {
+                var detail = info[label];
+                if (detail == "" || detail == []) { return; }
+                if (! (detail instanceof Array)) { detail = [detail]; }
+                
+                var item;
+                item = document.createElement('dt');
+                item.innerHTML = label;
+                list.appendChild(item);
+                
+                for (var i = 0; i != detail.length; i++) {
+                    item = document.createElement('dd');
+                    if (label == 'addresses') {
+                        item.innerHTML =
+                            detail[i].street + '; ' +
+                            detail[i].city + '; ' +
+                            detail[i].state + '; ' +
+                            detail[i].zip + '; ' +
+                            detail[i].country;
+                    }
+                    else {
+                        item.innerHTML = detail[i];
+                    }
+                    list.appendChild(item);
+                }
+            }
+        
+            function displayContactDetails(id) {
+                document.getElementById('contacts').setAttribute('style', 'display:none');
+                var list = document.getElementById("details");
+                list.setAttribute('style', 'display:block');
+                list.innerHTML = '';
+                
+                var myContacts = intel.xdk.contacts.getContactList();
+                var info = intel.xdk.contacts.getContactData(id);
+                
+                displayOneDetail(list, info, 'name');
+                displayOneDetail(list, info, 'first');
+                displayOneDetail(list, info, 'last');
+                displayOneDetail(list, info, 'id');
+                displayOneDetail(list, info, 'emails');
+                displayOneDetail(list, info, 'phones');
+                displayOneDetail(list, info, 'addresses');
+            }
+
+            function getContactList(){
+                displayContactTable("", "Click a contact to display details", function(id) {
+                    displayContactDetails(id);
+                });
+            }
+
+            function getContacts(){
+                intel.xdk.contacts.getContacts();
+            } 
+
+            document.addEventListener('intel.xdk.contacts.get', function(){
+                displayEvent("get() - " +
+                    intel.xdk.contacts.getContactList().length + " contacts");
+            });
+
+            function removeContact(){
+                displayContactTable("", "Click a contact to remove it", function(id) {
+                    intel.xdk.contacts.removeContact(id);
+                });
+            }
+
+            document.addEventListener('intel.xdk.contacts.remove', function(e){
+                displayEvent("remove(success=" + e.success +
+                        ", contactid=" + e.contactid + 
+                        ", error=" + e.error + ")");
+                if (e.success) {
+                    displayContactTable(e.contactid);
+                }
+            });
+
+        </script>
+    </body>
+</html>
