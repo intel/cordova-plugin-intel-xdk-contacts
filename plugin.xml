@@ -42,6 +42,18 @@ and limitations under the License
         <source-file src="src/wp8/Contacts.cs" />
     </platform>
 
+    <!-- windows -->
+    <platform name="windows">
+        <config-file target="package.appxmanifest" parent="/Package/Capabilities">
+            <!--<Capability Name="musicLibrary" />
+            <DeviceCapability Name="microphone" />-->
+        </config-file>
+
+        <js-module src="src/windows8/contactsProxy.js" name="ContactsProxy">
+            <merges target="" />
+        </js-module>
+   </platform>
+
     <!-- windows8 -->
     <platform name="windows8">
         <config-file target="package.appxmanifest" parent="/Package/Capabilities">
