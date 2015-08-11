@@ -123,7 +123,7 @@ document.addEventListener('intel.xdk.contacts.add', onContactAdded);
 
 intel.xdk.contacts.addContact();
 
-function onChooseContact(evt) {
+function onContactAdded(evt) {
    if (evt.success == true)
    {
       alert("Contact "+evt.contactid+" successfully added");
