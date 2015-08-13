@@ -32,70 +32,83 @@ and limitations under the License
         },
 
         addContact: function (successCallback, errorCallback, params) {
-            var e = document.createEvent('Events');
+            var me = module.exports;
+            /*var e = document.createEvent('Events');
             e.initEvent('intel.xdk.contacts.add', true, true);
             e.success = false;
             e.message = 'Add Contact not supported for Windows 8.';
-            document.dispatchEvent(e);
+            document.dispatchEvent(e);*/
+            me.createAndDispatchEvent("intel.xdk.contacts.add",
+                {
+                    success: false,
+                    message: "Add Contact not supported for Windows 8"
+                });
         },
 
         chooseContact: function (successCallback, errorCallback, params) {
-            var e = document.createEvent('Events');
+            var me = module.exports;
+            /*var e = document.createEvent('Events');
             e.initEvent('intel.xdk.contacts.choose', true, true);
             e.success = false;
             e.message = 'Choose Contact not supported for Windows 8.';
-            document.dispatchEvent(e);
-
-            //var me = module.exports;
-
-            //me.busy = true;
-
-            //var contactPicker = Windows.ApplicationModel.Contacts.ContactPicker();
-            //contactPicker.commitButtonText = "Select";
-
-            //contactPicker.pickSingleContactAsync().done(function (contact) {
-            //    if (contact !== null) {
-            //        // Display the name
-            //        //contactElement.appendChild(createTextElement("h3", contact.displayName));
-                        
-            //        var e = document.createEvent('Events');
-            //        e.initEvent('intel.xdk.contacts.choose',true,true);
-            //        e.success=true;
-            //        e.contactid = contact.Name;
-            //        document.dispatchEvent(e);
-            //    } else {
-            //        var ev = document.createEvent('Events');
-            //        ev.initEvent('intel.xdk.contacts.choose', true, true);
-            //        ev.success = false;
-            //        ev.message = 'User canceled';
-            //        document.dispatchEvent(ev);
-            //    }
-
-            //    me.busy = false;
-            //});
+            document.dispatchEvent(e);*/
+            me.createAndDispatchEvent("intel.xdk.contacts.choose",
+                {
+                    success: false,
+                    message: "Choose Contact not supported for Windows 8"
+                });
         },
 
         editContact: function (successCallback, errorCallback, params) {
-            var e = document.createEvent('Events');
+            var me = module.exports;
+            /*var e = document.createEvent('Events');
             e.initEvent('intel.xdk.contacts.edit', true, true);
             e.success = false;
             e.message = 'Edit Contact not supported for Windows 8.';
-            document.dispatchEvent(e);
+            document.dispatchEvent(e);*/
+            me.createAndDispatchEvent("intel.xdk.contacts.edit",
+                {
+                    success: false,
+                    message: "Edit Contact not supported for Windows 8"
+                });
         },
 
         getContacts: function (successCallback, errorCallback, params) {
-            var e = document.createEvent('Events');
+            var me = module.exports;
+            /*var e = document.createEvent('Events');
             e.initEvent('intel.xdk.contacts.get', true, true);
             e.success = false;
             e.message = 'Get Contacts not supported for Windows 8.';
-            document.dispatchEvent(e);
+            document.dispatchEvent(e);*/
+            me.createAndDispatchEvent("intel.xdk.contacts.get",
+                {
+                    success: false,
+                    message: "Get Contact not supported for Windows 8"
+                });
         },
 
         removeContact: function (successCallback, errorCallback, params) {
-            var e = document.createEvent('Events');
+            var me = module.exports;
+            /*var e = document.createEvent('Events');
             e.initEvent('intel.xdk.contacts.remove', true, true);
             e.success = false;
             e.message = 'Remove Contact not supported for Windows 8.';
+            document.dispatchEvent(e);*/
+            me.createAndDispatchEvent("intel.xdk.contacts.remove",
+                {
+                    success: false,
+                    message: "Remove Contact not supported for Windows 8"
+                });
+        },
+
+        createAndDispatchEvent: function (name, properties) {
+            var e = document.createEvent('Events');
+            e.initEvent(name, true, true);
+            if (typeof properties === 'object') {
+                for (key in properties) {
+                    e[key] = properties[key];
+                }
+            }
             document.dispatchEvent(e);
         }
     };
