@@ -49,15 +49,13 @@ public class Contacts extends CordovaPlugin{
 	public Contacts(){
 		
 	}
-	
+
 	@Override
 	public void initialize(CordovaInterface cordova, CordovaWebView webView){
 		super.initialize(cordova, webView);
 		
 		this.activity = cordova.getActivity();
 		this.webView = webView;
-		
-		((CordovaActivity)(this.activity)).setActivityResultCallback(this);
 	}
 	
 	@Override
@@ -110,8 +108,8 @@ public class Contacts extends CordovaPlugin{
 			Intent intent = new Intent(Intent.ACTION_INSERT);
 			intent.setType(ContactsContract.Contacts.CONTENT_TYPE);  
 			intent.putExtra(ContactsContract.Intents.Insert.FULL_MODE, true);
-			
-			
+
+			cordova.setActivityResultCallback(this);
 			activity.startActivityForResult(intent, CONTACT_ADDER_RESULT);           
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -158,7 +156,8 @@ public class Contacts extends CordovaPlugin{
 			busy = true;
 			
 			Intent intent = new Intent(Intent.ACTION_PICK);           
-			intent.setType(ContactsContract.Contacts.CONTENT_TYPE);           
+			intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
+			cordova.setActivityResultCallback(this);
 			activity.startActivityForResult(intent, CONTACT_CHOOSER_RESULT);           
 			//activity.setLaunchedChildActivity(true);
 		} catch (Exception e) {
@@ -363,6 +362,7 @@ public class Contacts extends CordovaPlugin{
 				intent.setType(ContactsContract.Contacts.CONTENT_TYPE);  
 				intent.setData(res);
 				//launch activity
+				cordova.setActivityResultCallback(this);
 			    activity.startActivityForResult(intent, CONTACT_EDIT_RESULT);           
 			    //activity.setLaunchedChildActivity(true); 
 			}

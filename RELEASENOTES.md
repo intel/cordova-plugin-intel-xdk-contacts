@@ -15,5 +15,8 @@
 # -->
 # Release Notes
 
+### 1.2.3 (September 17, 2015)
+* Fixed compatibility with cordova-android 4.0+
+
 ### 1.1.4 (May 15, 2015)
 * Initial public release
